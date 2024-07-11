@@ -8,19 +8,28 @@ import { add, plus } from "@/app/utils/Icons";
 import Modal from "../Modals/Modal";
 import EditContent from "../Modals/EditContent"; // Corrected import for EditContent
 
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  isCompleted: boolean;
+  isImportant: boolean;
+}
+
 interface Props {
   title: string;
-  tasks: any[];
+  tasks: Task[];
 }
 
 function Tasks({ title, tasks }: Props) {
-  const { theme, isLoading, openModal, closeModal, modal } = useGlobalState(); // Added closeModal to destructuring
+  const { theme, isLoading, openModal, closeModal, modal } = useGlobalState();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [editingTask, setEditingTask] = useState(null); // State for the task being edited
+  const [editingTask, setEditingTask] = useState<Task | null>(null); // State for the task being edited
   const [isCreating, setIsCreating] = useState(false); // State for creating task
 
-  const handleOpenEditModal = (task) => {
+  const handleOpenEditModal = (task: Task) => {
     setEditingTask(task);
     setIsCreating(false);
     openModal(); // Open the modal when editing task
@@ -45,7 +54,7 @@ function Tasks({ title, tasks }: Props) {
     .sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      return sortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
     });
 
   return (
