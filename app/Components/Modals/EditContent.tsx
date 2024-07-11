@@ -70,7 +70,7 @@ function EditContent({ task }: Props) {
     };
 
     try {
-      const res = await axios.put(`/api/tasks/${task.id}`, updatedTask);
+      const res = await axios.put(`/api/tasks/`, updatedTask);
 
       if (res.data.error) {
         toast.error(res.data.error);
