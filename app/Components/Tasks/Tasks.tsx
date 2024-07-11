@@ -6,7 +6,7 @@ import CreateContent from "../Modals/CreateContent";
 import TaskItem from "../TaskItem/TaskItem";
 import { add, plus } from "@/app/utils/Icons";
 import Modal from "../Modals/Modal";
-import EditContent from "../Modals/EditContent"; // Corrected import for EditContent
+import EditContent from "../Modals/EditContent";
 
 interface Task {
   id: string;
@@ -26,13 +26,13 @@ function Tasks({ title, tasks }: Props) {
   const { theme, isLoading, openModal, closeModal, modal } = useGlobalState();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [editingTask, setEditingTask] = useState<Task | null>(null); // State for the task being edited
-  const [isCreating, setIsCreating] = useState(false); // State for creating task
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleOpenEditModal = (task: Task) => {
     setEditingTask(task);
     setIsCreating(false);
-    openModal(); // Open the modal when editing task
+    openModal();
   };
 
   const handleOpenCreateModal = () => {
@@ -68,7 +68,7 @@ function Tasks({ title, tasks }: Props) {
               <EditContent task={editingTask} />
             ) : null
           }
-          onClose={handleCloseModal}
+          onClose={handleCloseModal} // Pass handleCloseModal as onClose prop
         />
       )}
       <h1>{title}</h1>
@@ -102,7 +102,7 @@ function Tasks({ title, tasks }: Props) {
             date={task.date}
             isCompleted={task.isCompleted}
             id={task.id}
-            onEdit={() => handleOpenEditModal(task)} // Pass the task to the handleOpenEditModal function
+            onEdit={() => handleOpenEditModal(task)}
           />
         ))}
         <button className="create-task" onClick={handleOpenCreateModal}>
@@ -177,7 +177,7 @@ const TaskStyled = styled.main`
       outline: none;
       cursor: pointer;
       color: white;
-      background-color: #202224; // corrected missing semicolon
+      background-color: #202224;
     }
   }
 
