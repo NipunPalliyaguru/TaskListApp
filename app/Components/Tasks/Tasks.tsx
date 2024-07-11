@@ -14,7 +14,7 @@ interface Props {
 }
 
 function Tasks({ title, tasks }: Props) {
-  const { theme, isLoading, openModal, modal } = useGlobalState();
+  const { theme, isLoading, openModal, closeModal, modal } = useGlobalState(); // Added closeModal to destructuring
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [editingTask, setEditingTask] = useState(null); // State for the task being edited
@@ -22,14 +22,15 @@ function Tasks({ title, tasks }: Props) {
 
   const handleOpenEditModal = (task) => {
     setEditingTask(task);
+    setIsCreating(false);
     openModal(); // Open the modal when editing task
   };
 
   const handleOpenCreateModal = () => {
     setIsCreating(true);
+    setEditingTask(null);
     openModal();
   };
-
 
   const handleCloseModal = () => {
     setIsCreating(false);
@@ -49,9 +50,18 @@ function Tasks({ title, tasks }: Props) {
 
   return (
     <TaskStyled theme={theme}>
-    {modal && (
-        <Modal content={modal === 'create' ? <CreateContent task={tasks} /> : <EditContent task={tasks} />} />
-    )}
+      {modal && (
+        <Modal
+          content={
+            isCreating ? (
+              <CreateContent />
+            ) : editingTask ? (
+              <EditContent task={editingTask} />
+            ) : null
+          }
+          onClose={handleCloseModal}
+        />
+      )}
       <h1>{title}</h1>
 
       <div className="controls">
@@ -70,12 +80,12 @@ function Tasks({ title, tasks }: Props) {
         </select>
       </div>
 
-      <button className="btn-rounded" onClick={openModal}>
+      <button className="btn-rounded" onClick={handleOpenCreateModal}>
         {plus}
       </button>
 
       <div className="tasks grid">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <TaskItem
             key={task.id}
             title={task.title}
@@ -83,9 +93,10 @@ function Tasks({ title, tasks }: Props) {
             date={task.date}
             isCompleted={task.isCompleted}
             id={task.id}
+            onEdit={() => handleOpenEditModal(task)} // Pass the task to the handleOpenEditModal function
           />
         ))}
-        <button className="create-task" onClick={openModal}>
+        <button className="create-task" onClick={handleOpenCreateModal}>
           {add}
           Add New Task
         </button>
@@ -102,7 +113,6 @@ const TaskStyled = styled.main`
   border: 2px solid ${(props) => props.theme.borderColor2};
   border-radius: 1rem;
   height: 100%;
-
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -116,13 +126,11 @@ const TaskStyled = styled.main`
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-
     background-color: ${(props) => props.theme.colorBg};
     border: 2px solid ${(props) => props.theme.borderColor2};
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
     color: ${(props) => props.theme.colorGrey2};
     font-size: 1.4rem;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -135,6 +143,33 @@ const TaskStyled = styled.main`
 
   .tasks {
     margin: 2rem 0;
+  }
+
+  .controls {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    color: ${(props) => props.theme.colorGrey2};
+    display: flex;
+    gap: 1rem;
+    background-color: ${(props) => props.theme.colorBg};
+
+    input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid ${(props) => props.theme.borderColor2};
+      border-radius: 0.5rem;
+      outline: none;
+    }
+
+    select {
+      padding: 0.5rem;
+      border: 1px solid ${(props) => props.theme.borderColor2};
+      border-radius: 0.5rem;
+      outline: none;
+      cursor: pointer;
+      color: white;
+      background-color: #202224; // corrected missing semicolon
+    }
   }
 
   > h1 {
@@ -159,7 +194,6 @@ const TaskStyled = styled.main`
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-
     height: 16rem;
     color: ${(props) => props.theme.colorGrey2};
     font-weight: 600;
