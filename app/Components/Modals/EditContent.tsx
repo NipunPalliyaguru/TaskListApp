@@ -74,9 +74,7 @@ function EditContent({ task }: Props) {
 
       if (res.data.error) {
         toast.error(res.data.error);
-      }
-
-      if (!res.data.error) {
+      } else {
         toast.success("Task updated successfully.");
         allTasks();
         closeModal();
@@ -158,7 +156,6 @@ function EditContent({ task }: Props) {
     </EditContentStyled>
   );
 }
-
 const EditContentStyled = styled.form`
   > h1 {
     font-size: clamp(1.2rem, 5vw, 1.6rem);
