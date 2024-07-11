@@ -2,7 +2,6 @@ import prisma from "@/app/utils/connect";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
-// POST method for creating tasks
 export async function POST(req: Request) {
   try {
     const { userId } = auth();
@@ -45,7 +44,6 @@ export async function POST(req: Request) {
   }
 }
 
-// GET method for retrieving tasks
 export async function GET(req: Request) {
   try {
     const { userId } = auth();
@@ -63,25 +61,17 @@ export async function GET(req: Request) {
     return NextResponse.json(tasks);
   } catch (error) {
     console.log("ERROR GETTING TASKS: ", error);
-    return NextResponse.json({ error: "Error getting tasks", status: 500 });
+    return NextResponse.json({ error: "Error updating task", status: 500 });
   }
 }
 
-// PUT method for updating tasks
 export async function PUT(req: Request) {
   try {
     const { userId } = auth();
-    const { id, title, description, date, completed, important } = await req.json();
+    const { isCompleted, id } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized", status: 401 });
-    }
-
-    if (!id || !title || !description || !date) {
-      return NextResponse.json({
-        error: "Missing required fields",
-        status: 400,
-      });
     }
 
     const task = await prisma.task.update({
@@ -89,47 +79,15 @@ export async function PUT(req: Request) {
         id,
       },
       data: {
-        title,
-        description,
-        date,
-        isCompleted: completed,
-        isImportant: important,
+        isCompleted,
       },
     });
 
     return NextResponse.json(task);
   } catch (error) {
     console.log("ERROR UPDATING TASK: ", error);
-    return NextResponse.json({ error: "Error updating task", status: 500 });
-  }
-}
-
-// DELETE method for deleting tasks
-export async function DELETE(req: Request) {
-  try {
-    const { userId } = auth();
-    const { id } = await req.json();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized", status: 401 });
-    }
-
-    if (!id) {
-      return NextResponse.json({
-        error: "Missing task ID",
-        status: 400,
-      });
-    }
-
-    await prisma.task.delete({
-      where: {
-        id,
-      },
-    });
-
-    return NextResponse.json({ message: "Task deleted successfully" });
-  } catch (error) {
-    console.log("ERROR DELETING TASK: ", error);
     return NextResponse.json({ error: "Error deleting task", status: 500 });
   }
 }
+
+
